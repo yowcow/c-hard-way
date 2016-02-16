@@ -30,7 +30,9 @@ void *Object_new(size_t size, Object proto, char *description) {
     if (!proto.describe) proto.describe = Object_describe;
     if (!proto.destroy)  proto.destroy = Object_destroy;
 
-    Object *el = calloc(1, size);
+    //Object *el = calloc(1, size);
+    Object *el = malloc(size);
+
     *el = proto;
 
     el->description = strdup(description);
