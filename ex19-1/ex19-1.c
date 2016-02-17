@@ -3,44 +3,38 @@
 #include <string.h>
 
 typedef struct {
-    char *description;
     void (*describe)(void *self);
     void (*destroy)(void *self);
 } Object;
 
 void Object_describe(void *self) {
-
-    Object *o = self;
-
-    printf("-> Description: %s\n", o->description);
+    printf("-> The object has nothing to describe\n");
 }
 
 void Object_destroy(void *self) {
-
-    Object *o = self;
-
-    printf("-> Destroy: %s\n", o->description);
-
-    free(o->description);
-    free(o);
+    printf("-> Destroying an object\n");
+    free(self);
 }
 
-void *Object_new(size_t size, Object proto, char *description) {
+Object ObjectProto = {
+    .describe = Object_describe,
+    .destroy  = Object_destroy
+};
 
-    if (!proto.describe) proto.describe = Object_describe;
-    if (!proto.destroy)  proto.destroy = Object_destroy;
+void *Object_new(size_t size, Object proto) {
+
+    if (!proto.describe) proto.describe = ObjectProto.describe;
+    if (!proto.destroy)  proto.destroy = ObjectProto.destroy;
 
     //Object *el = calloc(1, size);
     Object *el = malloc(size);
 
     *el = proto;
 
-    el->description = strdup(description);
-
     return el;
 }
 
-#define NEW(T, N) Object_new(sizeof(T), T##Proto, N)
+#define NEW(T) Object_new(sizeof(T), T##Proto)
 #define _(N) proto.N
 
 //--------
@@ -52,26 +46,15 @@ typedef struct {
 } Person;
 
 void Person_describe(void* self) {
-
     Person *p = self;
-
-    // Do default "describe"
-    Object_describe(self);
-
-    // Do *my* "describe"
     printf("---> Hi, I'm %s with ID %d\n", p->name, p->id);
 }
 
 void Person_destroy(void* self) {
-
     Person* p = self;
-
-    // Do *my* "destroy"
     printf("---> I'm destroying a Person with ID: %d\n", p->id);
     free(p->name);
-
-    // Do default "destroy"
-    Object_destroy(self);
+    free(p);
 }
 
 Object PersonProto = {
@@ -83,7 +66,7 @@ Person* Person_create(int id, char* name) {
 
     //Person* p = Object_new(sizeof(Person), PersonProto, "人です");
 
-    Person* p = NEW(Person, "Person とは人です");
+    Person* p = NEW(Person);
 
     p->id = id;
     p->name = strdup(name);
@@ -94,14 +77,35 @@ Person* Person_create(int id, char* name) {
 //--------
 
 int main () {
+    char* name = "あいうえ";
 
-    Person *p = Person_create(1111, "おなまえ");
+    {
+        Person *p = Person_create(1111, name);
 
-    //p->proto.describe(p);
-    //p->proto.destroy(p);
+        p->_(describe)(p);
+        p->_(destroy)(p);
+    }
 
-    p->_(describe)(p);
-    p->_(destroy)(p);
+    {
+        Person* p = Object_new(sizeof(Person), PersonProto);
+
+        p->id = 1111;
+        p->name = strdup(name);
+
+        p->_(describe)(p);
+        p->_(destroy)(p);
+    }
+
+    {
+        Person *p = malloc(sizeof(Person));
+
+        p->proto = PersonProto;
+        p->id = 1111;
+        p->name = strdup(name);
+
+        p->proto.describe(p);
+        p->proto.destroy(p);
+    }
 
     return 0;
 }
