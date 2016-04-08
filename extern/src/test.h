@@ -1,7 +1,9 @@
 #ifdef __cplusplus
 extern "C" {
-    char* hoge(void);
+#endif
+
+char* hoge(void);
+
+#ifdef __cplusplus
 }
-#else
-extern char* hoge(void);
 #endif
