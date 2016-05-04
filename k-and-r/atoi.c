@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdio.h>
 
 int atoi(char* s) {
@@ -11,27 +12,18 @@ int atoi(char* s) {
     return n;
 }
 
-char uc(char c) {
-
-    if (c >= 'a' && c <= 'z') {
-        c = c - 'a' + 'A';
-    }
-
-    return c;
-}
-
 int htoi(char* s) {
     int i, n;
 
     n = 0;
     for (i = 0; *(s + i) != 0; i++) {
-        char c = uc(*(s + i));
+        char c = toupper(*(s + i));
         int val = 0;
 
-        if (c >= '0' && c <= '9') {
+        if (isdigit(c)) {
             val = c - '0';
         }
-        else if (c >= 'A' && c <= 'F') {
+        else if (isxdigit(c)) {
             val = c - 'A' + 10;
         }
 
