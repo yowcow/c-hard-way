@@ -17,6 +17,15 @@ int main() {
         assert(strcmp(s, "43209") == 0);
     }
 
+    {
+        char s[MAX_LINE];
+
+        itoa(-1234, s);
+
+        printf("Result: %s\n", s);
+        assert(strcmp(s, "-1234") == 0);
+    }
+
     return 0;
 }
 
@@ -35,14 +44,22 @@ void reverse(char s[]) {
 }
 
 void itoa(int n, char s[]) {
-    int i;
+    int i, sign;
 
     if (n < 0) {
         n = -n;
+        sign = -1;
+    }
+    else {
+        sign = 1;
     }
 
     for (i = 0; n > 0; i++, n /= 10) {
         s[i] = n % 10 + '0';
+    }
+
+    if (sign == -1) {
+        s[i++] = '-';
     }
 
     s[i] = '\0';
