@@ -27,19 +27,19 @@ unsigned char bit2char(char* bit) {
 
 unsigned char rightrot(unsigned char x, int n) {
     unsigned char mask = ~0;
-    unsigned char right_bit_on = 1;
+    unsigned char right_bit_on = 01;
     unsigned char left_bit_on  = ~(mask >> 1);
     int i;
 
     for (i = 0; i < n; i++) {
         if ((x | right_bit_on) == x) {
             // right most bit is 1
-            x = x >> 1;
-            x = x | left_bit_on;
+            x >>= 1;
+            x |= left_bit_on;
         }
         else {
             // right most bit is not 1
-            x = x >> 1;
+            x >>= 1;
         }
     }
 
